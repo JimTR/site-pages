@@ -327,16 +327,53 @@ array(
         'disporder'   => 1,
         'gid'         => 0
     );
-    $data['settings']['gis']	= 
+   $data['settings']['home_title'] =
     array(
-        'name'        => 'home_gis',
-        'title'       => 'Show Navigation on home page',
-        'description' => 'Toggle navigation on/off on the home page only',
-        'optionscode' => 'yesno',
-        'value'       => 0,
-        'disporder'   => 2,
-        'gid'         => ''
-    );
+		'name'=> "home_home_title",
+		"title" => "Home breadcrumb title",
+		"description" => "The text displayed for the website Home breadcrumb.",
+		"optionscode" => "text",
+		"value" => "Home",
+		'gid'	=> ''
+	);
+	$data['settings']['home_home_page'] =
+	array(
+			'name'=> "home_home_page",
+			"title" => "Home page URL",
+			"description" => "The text displayed for the forum section breadcrumb when navigating pages that are not listed as direct links under Home.",
+			"optionscode" => "text",
+			"value" => "",
+			'gid'	=> ''
+		);
+		$data['settings']['home_forum_title'] =
+		array(
+			'name'=> "home_forum_title",
+			"title" => "Forum breadcrumb title",
+			"description" => "This setting will display on the navigation as the link text for index.php if you are using a different script as your home page",
+			"optionscode" => "text",
+			"value" =>'Forums',
+			'gid'	=> ''
+		);
+		$data['settings']['home_home_hide_breadcrumb'] =
+		array(
+			'name'=> "home_home_hide_breadcrumb",
+			"title" => "Hide Home Breadcrumb",
+			"description" => "Hide the Home breadcrumb when viewing the configured home page.",
+			"optionscode" => "yesno",
+			"value" => 0,
+			'gid'	=> ''
+		);
+		$data['settings']['home_files'] =
+		array(
+			'name'=> "home_files",
+			"title" => "Direct links under Home",
+			"description" => "Add scripts that will <b>NOT</b> have the forum link added to the navigation. seperate each script with a comma.<br>This has no bearing if you use index.php as your home page ",
+			"optionscode" => "text",
+			"value" => "",
+			'gid'	=> ''
+		);
+		
+		
     // the gid will be added at activation time  apart from the forced setting for home_disable
     
     /* Default Blocks */
