@@ -489,13 +489,7 @@ function home_uninstall() {
 			$db->drop_table($table['name']);
 		}
 	}
-	// Remove templates.
-	$prefix = 'sitepages_';
-	echo $db->delete_query('templates', "title LIKE '{$prefix}%'");
-
-	// Remove template group.
-	$db->delete_query('templategroups', "prefix='sitepages'");
-
+	
 	// Remove CSS stylesheets.
 	foreach ($data['css'] as $css) {
 
@@ -530,16 +524,24 @@ function home_uninstall() {
 	// Refresh Master Style and child theme stylesheet lists.
 	update_theme_stylesheet_list(1);
 
-	// Remove plugin settings.
-	$db->delete_query('settings', "name LIKE 'home\_%'");
-	$db->delete_query('settinggroups', "name = 'home'");
+	// Remove plugin-owned database tables.
+	foreach ($data['tables'] as $table) {
+		if (!empty($table['name']) && $db->table_exists($table['name'])) {
+			$db->drop_table($table['name']);
+		}
+	}
 
-	rebuild_settings();
 	// Remove Site Pages templates.
 	$db->delete_query('templates', "title LIKE 'sitepages_%'");
 
 	// Remove Site Pages template group.
 	$db->delete_query('templategroups', "prefix='sitepages'");
+
+	// Remove plugin settings.
+	$db->delete_query('settings', "name LIKE 'home!_%' ESCAPE '!'");
+
+	// Remove plugin setting group.
+	$db->delete_query('settinggroups', "name='home'");
 
 	$admin_dir = rtrim(MYBB_ADMIN_DIR, '/\\') . DIRECTORY_SEPARATOR;
 	$root_dir = rtrim(MYBB_ROOT, '/\\') . DIRECTORY_SEPARATOR;
@@ -669,6 +671,11 @@ function home_load_resources() {
 		if ($record) {
 			// Verify the stored data.
 			$checksum = hash('sha256', $record['data']);
+			if(home_update_check() !== $checksum){
+				// new resource
+				flash_message("updated resources detected<br>deactivate then activate again to load the new resource","error"); 
+				admin_redirect('index.php?module=config-plugins');
+			}
 
 			if (!hash_equals($record['checksum'], $checksum)) {
 				throw new RuntimeException(
@@ -707,8 +714,7 @@ function home_load_resources() {
 }
 
 function home_validate_resources($data, $required_sections) {
-	home_debug('Starting validate');
-
+	
 	if (!is_array($data) || empty($data)) {
 		throw new RuntimeException(
 			'Site Pages: Resource data is invalid or empty.'
@@ -850,6 +856,25 @@ function home_mangle_nav() {
 	foreach ($tmp_navbits as $navbit) {
 		$navbits[] = $navbit;
 	}
+}
+
+function home_update_check(){
+	// has install.dta changed ?
+	$path = __DIR__ . '/home/install.dta';
+	if (!is_file($path) || !is_readable($path)) {
+		throw new RuntimeException(
+			"Site Pages: Data file missing or unreadable: {$path}"
+		);
+	}
+
+	$data = include $path;
+
+	if (!is_array($data) || empty($data)) {
+		throw new RuntimeException(
+			'Site Pages: Resource data is invalid or empty.fallback'
+		);
+	}
+	return hash('sha256', $data);
 }
 function home_is_navman_active() {
 	global $cache;
