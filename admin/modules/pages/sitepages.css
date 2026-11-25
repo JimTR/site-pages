@@ -1,0 +1,218 @@
+a.button-disabled:hover {
+background:#BA8E23;
+color:#fff;
+}
+a.button-enabled:hover {
+background:green;
+font-weight:bold;
+color:#fff;
+}
+a.button-delete:hover {
+background:#c00;color:#fff;
+}
+.general{
+font-size:12px;
+}
+.buttons_container {
+display: flex; 
+align-items: center; 
+justify-content: center; 
+gap: 6px;
+ }
+.popup_button {
+padding: 4px 8px; 
+text-decoration: none; 
+border-radius: 3px; 
+font-size: 11px;
+}
+select.text_input:disabled {
+    opacity: 1;
+    color: #666;
+    cursor: not-allowed;
+}
+.red {
+color:#c00;
+font-weight:bold;
+}
+.green{
+color:green;
+font-weight:bold;
+}
+.button-disable:hover {
+  color:#BA8E23;
+}
+.button-enable:hover {
+  color:green; font-weight:bold;
+}
+.button-delete:hover {
+color:#c00;
+}
+.modal .thead {
+    background: #006699;
+    color: #ffffff;
+    padding: 1%;
+    font-weight: bold;		
+}
+.modal .tborder {
+    width: 100%;
+}
+.modal .trow1 {
+   text-align: center;
+}
+ /* #e3e3e3 url(images/submit_bg.png) repeat-x top */
+.submit_button{
+    border: 1px solid #999;
+    padding: 4px 7px;
+    background: #e3e3e3 url(/admin/styles/default/images/submit_bg.png) repeat-x top;
+    color: #444;
+    font-weight: bold;
+    font-family: "Lucida Grande", Tahoma, Verdana, Arial, sans-serif;
+    margin-right: 3px;
+    font-size: 1.1em;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    outline: 0; 
+}
+
+.label{
+   float:left;
+   padding-right:3%;
+   padding-top: 2.5%;
+   font-weight: bold;
+}
+.label-option{
+  float: left;
+  padding-right:3%;
+  padding-top:4.5%;
+  font-weight:bold;
+}
+.control{
+   float:left;
+   padding-top:1.2%;
+}	
+.control-option{
+  float: left;
+  padding-top: 4%;
+}
+input.radio_input{
+  margin-left:11px;
+}  
+.control-option-sep{
+   padding-right:3%;
+   float: left;
+}
+
+.group-dropdown {
+    position: absolute;
+    display: inline-block;
+    width: 250px;
+}
+
+.group-dropdown-toggle {
+    width: 100%;
+    padding: 6px 10px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.group-dropdown-content {
+    display: none;
+    position: relative;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #ccc;
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.group-dropdown-content label {
+    display: block;
+    padding: 5px 8px;
+    cursor: pointer;
+}
+
+.group-dropdown-content label:hover {
+    background: #eee;
+}
+
+.modal-container {
+    display: none;
+    position: fixed;
+    z-index: 99999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal {
+    position: relative;
+    width: 900px;
+    max-width: 90%;
+    margin: 8vh auto 0;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+.modal-content{
+   text-align:center;
+} 
+
+.modal-close {
+    float: right;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 14px;
+    padding: 0 8px 0 0;
+}
+
+.modal-close:hover {
+    color: #ddd;
+}
+div.CodeMirror span.CodeMirror-matchingbracket {
+    background: rgba(255, 150, 0, .3);
+    border: 1px dotted;
+    border-radius: 2px;
+}
+
+.modal .border_wrapper {
+	margin: 0;
+	border : 0;
+}
+.modal .form_button_wrapper{
+	margin: 0;
+	border: 0;
+	background: transparent;
+}
+
+.modal table.general td{
+	border: 0;
+	background: transparent;
+}
+.block-form-details {
+    display: flex;
+    align-items: flex-start;
+    gap: 35px;
+    flex-wrap: wrap;
+}
+
+.block-field {
+    /*display: flex;*/
+    flex-direction: column;
+}
+.block-field-offset {
+    padding-top: 7px;
+}
+.name-input{
+     width: 70% !important;
+}

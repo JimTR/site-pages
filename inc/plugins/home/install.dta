@@ -1,0 +1,363 @@
+<?php
+$data = array();
+
+/* Tables */
+$data['tables']['blocks']['name'] = "pages_blocks";
+$data['tables']['blocks']['mysql'] = "CREATE TABLE `".TABLE_PREFIX."pages_blocks` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(50) NOT NULL,
+	`title` varchar(255) NOT NULL,
+	`show_title` TINYINT(1) NOT NULL DEFAULT 1,
+	`content` text NOT NULL,
+	`block` text NOT NULL,
+	`enabled` TINYINT(1) NOT NULL DEFAULT 0,
+	`visible` varchar(100) NOT NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB;";
+
+$data['tables']['blocks']['pgsql'] = "CREATE TABLE ".TABLE_PREFIX."pages_blocks (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    title VARCHAR(255) NOT NULL,
+    show_title SMALLINT NOT NULL DEFAULT 1,
+    content TEXT NOT NULL,
+    block TEXT NOT NULL,
+    enabled SMALLINT NOT NULL DEFAULT 0,
+    visible VARCHAR(100) NOT NULL
+);";
+
+$data['tables']['blocks']['sqlite'] = "CREATE TABLE ".TABLE_PREFIX."pages_blocks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    title VARCHAR(255) NOT NULL,
+    show_title INTEGER NOT NULL DEFAULT 1,
+    content TEXT NOT NULL,
+    block TEXT NOT NULL,
+    enabled INTEGER NOT NULL DEFAULT 0,
+    visible VARCHAR(100) NOT NULL
+);";
+
+$data['tables']['pages']['name'] = "pages_pages";
+
+// MySQL
+$data['tables']['pages']['mysql'] = "CREATE TABLE `".TABLE_PREFIX."pages_pages` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `title` VARCHAR(255) NOT NULL,
+    `name` VARCHAR(50) NOT NULL,
+    `content` TEXT NOT NULL,
+    `php` TEXT NOT NULL,
+    `enabled` TINYINT(1) NOT NULL DEFAULT 1,
+    `php_enabled` TINYINT(1) NOT NULL DEFAULT 0,
+    `show_blocks` TINYINT(1) NOT NULL DEFAULT 0,
+    `visible` VARCHAR(100) NOT NULL,
+    `is_default` TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB;";
+
+// PostgreSQL
+$data['tables']['pages']['pgsql'] = "CREATE TABLE ".TABLE_PREFIX."pages_pages (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    content TEXT NOT NULL,
+    php TEXT NOT NULL,
+    enabled SMALLINT NOT NULL DEFAULT 1,
+    php_enabled SMALLINT NOT NULL DEFAULT 0,
+    show_blocks SMALLINT NOT NULL DEFAULT 0,
+    visible VARCHAR(100) NOT NULL,
+    is_default SMALLINT NOT NULL DEFAULT 0
+);";
+
+// SQLite
+$data['tables']['pages']['sqlite'] = "CREATE TABLE ".TABLE_PREFIX."pages_pages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title VARCHAR(255) NOT NULL,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    content TEXT NOT NULL,
+    php TEXT NOT NULL,
+    enabled INTEGER NOT NULL DEFAULT 1,
+    php_enabled INTEGER NOT NULL DEFAULT 0,
+    show_blocks INTEGER NOT NULL DEFAULT 0,
+    visible VARCHAR(100) NOT NULL,
+    is_default INTEGER NOT NULL DEFAULT 0
+);";
+
+$data['tables']['resources']['name'] = "pages_resources";
+
+// MySQL
+$data['tables']['resources']['mysql'] = "CREATE TABLE `".TABLE_PREFIX."pages_resources` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `data` LONGTEXT NOT NULL,
+    `version` VARCHAR(50) NOT NULL DEFAULT '',
+    `checksum` CHAR(64) NOT NULL,
+    `dateline` INT UNSIGNED NOT NULL,
+    `active` TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`),
+    KEY `active` (`active`)
+) ENGINE=InnoDB;";
+
+// PostgreSQL
+$data['tables']['resources']['pgsql'] = "CREATE TABLE ".TABLE_PREFIX."pages_resources (
+    id SERIAL PRIMARY KEY,
+    data TEXT NOT NULL,
+    version VARCHAR(50) NOT NULL DEFAULT '',
+    checksum CHAR(64) NOT NULL,
+    dateline BIGINT NOT NULL,
+    active SMALLINT NOT NULL DEFAULT 0
+);
+
+CREATE INDEX ".TABLE_PREFIX."pages_resources_active_idx
+ON ".TABLE_PREFIX."pages_resources (active);";
+
+// SQLite
+$data['tables']['resources']['sqlite'] = "CREATE TABLE ".TABLE_PREFIX."pages_resources (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    data TEXT NOT NULL,
+    version VARCHAR(50) NOT NULL DEFAULT '',
+    checksum CHAR(64) NOT NULL,
+    dateline INTEGER NOT NULL,
+    active INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX ".TABLE_PREFIX."pages_resources_active_idx
+ON ".TABLE_PREFIX."pages_resources (active);";
+
+$data['tables']['layout']['name'] = "pages_layout";
+
+// MySQL
+$data['tables']['layout']['mysql'] = "CREATE TABLE `".TABLE_PREFIX."pages_layout` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `page_id` INT UNSIGNED NOT NULL,
+    `block_id` INT UNSIGNED NOT NULL,
+    `zone` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    `display_order` SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`),
+    KEY `page_id` (`page_id`),
+    KEY `block_id` (`block_id`),
+    KEY `page_zone_order` (`page_id`, `zone`, `display_order`),
+    UNIQUE KEY `page_block_zone` (`page_id`, `block_id`, `zone`)
+) ENGINE=InnoDB;";
+
+// PostgreSQL
+$data['tables']['layout']['pgsql'] = "CREATE TABLE ".TABLE_PREFIX."pages_layout (
+    id BIGSERIAL PRIMARY KEY,
+    page_id BIGINT NOT NULL,
+    block_id BIGINT NOT NULL,
+    zone SMALLINT NOT NULL DEFAULT 0,
+    display_order INTEGER NOT NULL DEFAULT 0,
+    CONSTRAINT pages_layout_page_block_zone UNIQUE (page_id, block_id, zone)
+);";
+
+$data['tables']['layout']['indexes']['pgsql'] = array(
+    "CREATE INDEX ".TABLE_PREFIX."pages_layout_page_id_idx ON ".TABLE_PREFIX."pages_layout (page_id)",
+    "CREATE INDEX ".TABLE_PREFIX."pages_layout_block_id_idx ON ".TABLE_PREFIX."pages_layout (block_id)",
+    "CREATE INDEX ".TABLE_PREFIX."pages_layout_page_zone_order_idx ON ".TABLE_PREFIX."pages_layout (page_id, zone, display_order)"
+);
+
+// SQLite
+$data['tables']['layout']['sqlite'] = "CREATE TABLE ".TABLE_PREFIX."pages_layout (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    page_id INTEGER NOT NULL,
+    block_id INTEGER NOT NULL,
+    zone INTEGER NOT NULL DEFAULT 0,
+    display_order INTEGER NOT NULL DEFAULT 0,
+    UNIQUE (page_id, block_id, zone)
+);";
+
+$data['tables']['layout']['indexes']['sqlite'] = array(
+    "CREATE INDEX ".TABLE_PREFIX."pages_layout_page_id_idx ON ".TABLE_PREFIX."pages_layout (page_id)",
+    "CREATE INDEX ".TABLE_PREFIX."pages_layout_block_id_idx ON ".TABLE_PREFIX."pages_layout (block_id)",
+    "CREATE INDEX ".TABLE_PREFIX."pages_layout_page_zone_order_idx ON ".TABLE_PREFIX."pages_layout (page_id, zone, display_order)"
+);
+
+/*   Templates	 */
+
+$data['templates']['main']['name'] = "sitepages_main"; // actual template name
+$data['templates']['main']['content']= '<html>
+<head>
+<title>{$mybb->settings["bbname"]}</title>
+{$headerinclude}
+</head>
+<body>
+{$header}
+{$topblocks}
+<main class="sp-layout-page">
+	<aside class="sp-col sp-col-left">
+		{$leftblocks}
+	</aside>
+	
+	<section class="sp-col sp-col-center">
+		{$centerblocks}
+	</section>
+	
+	<aside class="sp-col sp-col-right">
+		{$rightblocks}
+	</aside>
+</main>
+{$bottomblocks}
+{$footer}
+</body>
+</html>
+'; // content
+$data['templates']['side_block']['name'] = "sitepages_block";
+$data['templates']['side_block']['content'] ='<htnl><div id="side-block">Side block</div></htnl>';
+$data['templates']['full_block']['name'] = "sitepages_fullblock";
+$data['templates']['full_block']['content'] ='<htnl> <div id="full-block">Full Block</div> </htnl>';
+
+/* Sample Blocks */
+$data['blocks']['welcome'] = array(
+	'name' => 'sample_welcome',
+	'title' => 'Welcome',
+	'show_title' => 1,
+	'content' => <<<'HTML'
+<div class="hello">
+	Welcome <b>{$mybb->user['username']}</b>
+</div>
+HTML,
+	'block' => <<<'PHP'
+<?php
+global $mybb;
+PHP,
+	'enabled' => 1,
+	'visible' => ''
+);
+
+/* sample Pages  */
+
+$data['pages']['welcome'] = array(
+	'name' => 'welcome',
+	'title' => 'Welcome',
+	'content' => <<<'HTML'
+<div class="site-page-welcome">
+	<h1>Welcome to {$mybb->settings['bbname']}</h1>
+	<p>Hello, <strong>{$welcome_username}</strong>.</p>
+	<p>This is your first Site Pages page.</p>
+</div>
+HTML,
+	'php' => <<<'PHP'
+<?php
+global $mybb;
+
+$welcome_username = htmlspecialchars_uni(
+	$mybb->user['username']
+);
+PHP,
+	'enabled' => 1,
+	'php_enabled' => 1,
+	'show_blocks' => 1,
+	'visible' => '',
+	'is_default' => 0
+);
+
+/* sample layout */
+
+$data['layouts']['welcome'] = array(
+	'page' => 'welcome',
+	'block' => 'sample_welcome',
+	'zone' => 0,
+	'display_order' => 1
+);
+
+/* css */
+
+$data['css']['main'] = 
+	array(
+	'name' => "site.css",
+	'content' => "/* 1. Base Framework Setup */
+sp-layout-page {
+	display: block; /* Falls back to plain full width rows if side columns are empty */
+	width: 100%;
+}
+
+.sp-col-left, .sp-col-right {
+	
+}
+
+.sp-col {
+	min-width: 0;
+}
+
+/* 2. Standard 3-Column Desktop Grid Framework */
+@media (min-width: 992px) {
+	.sp-layout-page {
+		display: grid !important;
+		grid-template-columns: 12% 1fr 12%;
+		gap: 0%;
+		padding-top: 0%;
+		align-items: start;
+	}
+
+	.sp-layout-page .sp-col-center {
+		display: block !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		margin-top: calc(-4vh) !important;
+	}
+	
+	/* 3. THE MAGIC FIX: Dynamic Empty Structural Overrides */
+	/* If a sub-page leaves the block wrappers completely empty, collapse the grid track layout to 100% width automatically */
+	.sp-layout-page:not(:has(.sp-block-wrap)) {
+		display: block !important;
+	}
+	
+	.sp-layout-page:not(:has(.sp-block-wrap)) .sp-col-center {
+		margin-top: 0 !important; /* Disables the -4vh on non-portal pages */
+		width: 100% !important;   /* Forces normal wide display tracking */
+	}
+
+	/* Extra safety for legacy browsers lacking full ':has()' support */
+	.sp-col-left[style*='display: none'],
+	.sp-col-left[style*='display:none'] {
+		display: none !important;
+		grid-column: 1 / 1;
+	}
+}");	
+
+/* Settings */
+
+$data['settings']['home_disable']	= 
+array(
+        'name'        => 'home_disable',
+        'title'       => 'Disable Plugin',
+        'description' => 'Toggle this setting to turn off the home functionality.',
+        'optionscode' => 'yesno',
+        'value'       => 0,
+        'disporder'   => 1,
+        'gid'         => 0
+    );
+    $data['settings']['gis']	= 
+    array(
+        'name'        => 'home_gis',
+        'title'       => 'Show Navigation on home page',
+        'description' => 'Toggle navigation on/off on the home page only',
+        'optionscode' => 'yesno',
+        'value'       => 0,
+        'disporder'   => 2,
+        'gid'         => ''
+    );
+    // the gid will be added at activation time  apart from the forced setting for home_disable
+    
+    /* Default Blocks */
+   
+
+    return $data;
+     /*
+      * global $db;
+$current_page_id = 4; // Dynamically identified from URL slug
+
+// Fetch all blocks enabled specifically for this page, ordered by zone and position
+$query = $db->write_query("
+    SELECT b.*, l.zone, l.position 
+    FROM " . TABLE_PREFIX . "pages_layout l
+    INNER JOIN " . TABLE_PREFIX . "pages_blocks b ON l.block_id = b.id
+    WHERE l.page_id = " . (int)$current_page_id . " AND l.enabled = 1
+    ORDER BY l.zone ASC, l.position ASC
+");
+
+while($block = $db->fetch_array($query))
+{
+    // Render the blocks on the specific layout zone canvas dynamically!
+}
+*/
