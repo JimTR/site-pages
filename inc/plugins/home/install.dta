@@ -175,7 +175,8 @@ $data['tables']['layout']['indexes']['sqlite'] = array(
 /*   Templates	 */
 
 $data['templates']['main']['name'] = "sitepages_main"; // actual template name
-$data['templates']['main']['content']= '<html>
+$data['templates']['main']['content'] = <<<'HTML'
+<html>
 <head>
 <title>{$mybb->settings["bbname"]}</title>
 {$headerinclude}
@@ -187,11 +188,11 @@ $data['templates']['main']['content']= '<html>
 	<aside class="sp-col sp-col-left">
 		{$leftblocks}
 	</aside>
-	
+
 	<section class="sp-col sp-col-center">
 		{$centerblocks}
 	</section>
-	
+
 	<aside class="sp-col sp-col-right">
 		{$rightblocks}
 	</aside>
@@ -200,11 +201,11 @@ $data['templates']['main']['content']= '<html>
 {$footer}
 </body>
 </html>
-'; // content
+HTML; // content
 $data['templates']['side_block']['name'] = "sitepages_block";
-$data['templates']['side_block']['content'] ='<htnl><div id="side-block">Side block</div></htnl>';
+$data['templates']['side_block']['content'] ='<div id="side-block">Side block</div>';
 $data['templates']['full_block']['name'] = "sitepages_fullblock";
-$data['templates']['full_block']['content'] ='<htnl> <div id="full-block">Full Block</div> </htnl>';
+$data['templates']['full_block']['content'] ='<div id="full-block">Full Block</div>';
 
 /* Sample Blocks */
 $data['blocks']['welcome'] = array(
@@ -266,7 +267,7 @@ $data['css']['main'] =
 	array(
 	'name' => "site.css",
 	'content' => "/* 1. Base Framework Setup */
-sp-layout-page {
+	.sp-layout-page {
 	display: block; /* Falls back to plain full width rows if side columns are empty */
 	width: 100%;
 }
@@ -334,6 +335,7 @@ array(
 		"description" => "The text displayed for the website Home breadcrumb.",
 		"optionscode" => "text",
 		"value" => "Home",
+		 'disporder'   => 2,
 		'gid'	=> ''
 	);
 	$data['settings']['home_home_page'] =
@@ -343,6 +345,7 @@ array(
 			"description" => "The text displayed for the forum section breadcrumb when navigating pages that are not listed as direct links under Home.",
 			"optionscode" => "text",
 			"value" => "",
+			 'disporder'   => 3,
 			'gid'	=> ''
 		);
 		$data['settings']['home_forum_title'] =
@@ -352,6 +355,7 @@ array(
 			"description" => "This setting will display on the navigation as the link text for index.php if you are using a different script as your home page",
 			"optionscode" => "text",
 			"value" =>'Forums',
+			 'disporder'   => 4,
 			'gid'	=> ''
 		);
 		$data['settings']['home_home_hide_breadcrumb'] =
@@ -361,6 +365,7 @@ array(
 			"description" => "Hide the Home breadcrumb when viewing the configured home page.",
 			"optionscode" => "yesno",
 			"value" => 0,
+			 'disporder'   => 5,
 			'gid'	=> ''
 		);
 		$data['settings']['home_files'] =
@@ -370,6 +375,7 @@ array(
 			"description" => "Add scripts that will <b>NOT</b> have the forum link added to the navigation. seperate each script with a comma.<br>This has no bearing if you use index.php as your home page ",
 			"optionscode" => "text",
 			"value" => "",
+			 'disporder'   => 6,
 			'gid'	=> ''
 		);
 		
@@ -380,21 +386,4 @@ array(
    
 
     return $data;
-     /*
-      * global $db;
-$current_page_id = 4; // Dynamically identified from URL slug
-
-// Fetch all blocks enabled specifically for this page, ordered by zone and position
-$query = $db->write_query("
-    SELECT b.*, l.zone, l.position 
-    FROM " . TABLE_PREFIX . "pages_layout l
-    INNER JOIN " . TABLE_PREFIX . "pages_blocks b ON l.block_id = b.id
-    WHERE l.page_id = " . (int)$current_page_id . " AND l.enabled = 1
-    ORDER BY l.zone ASC, l.position ASC
-");
-
-while($block = $db->fetch_array($query))
-{
-    // Render the blocks on the specific layout zone canvas dynamically!
-}
-*/
+  
