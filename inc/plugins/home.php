@@ -67,7 +67,7 @@ function home_info() {
  * @return none
  * 
  */
-function home_install() {
+function home_install($data = array()) {
 	global $db, $mybb;
 	try {
 		$db_type = $mybb->config['database']['type'];
@@ -90,7 +90,10 @@ function home_install() {
 					"Site Pages: Unsupported database driver: {$db_type}"
 				);
 		}
-		$data = home_load_resources();
+		if (count($data) == 0){
+			// do this for a new install else use the update
+			$data = home_load_resources();
+		}
 
 		home_validate_resources($data, array(
 			'tables' => array('name', 'mysql', 'pgsql', 'sqlite'),
@@ -885,12 +888,44 @@ function home_update_check(){
 		);
 	}
 }
+
+function home_load_current_resources() {
+	$path = __DIR__ . '/home/install.dta';
+
+	if (!is_file($path) || !is_readable($path)) {
+		throw new RuntimeException(
+			'Site Pages: Data file missing or unreadable.'
+		);
+	}
+
+	$data = include $path;
+
+	if (!is_array($data) || empty($data)) {
+		throw new RuntimeException(
+			'Site Pages: Resource data is invalid or empty.'
+		);
+	}
+
+	return $data;
+}
+
 function home_update() {
 	 global $db, $mybb;
     if ($mybb->input['action'] != "update_home"){
         return;
     }
-    die("in update");
+    try {
+		
+		$new_data =  home_load_current_resources();
+		home_install($new_data);
+	}
+    catch (Throwable $e) {
+		flash_message($e->getMessage(), 'error');
+		admin_redirect('index.php?module=config-plugins');
+		return;
+	} 
+	flash_message("Site Pages successfully Updated" ,"success");
+    admin_redirect('index.php?module=config-plugins');
 }
 function home_is_navman_active() {
 	global $cache;
