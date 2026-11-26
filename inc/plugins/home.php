@@ -27,7 +27,11 @@ ini_set('display_startup_errors', '1');
 if(!defined("IN_MYBB")){die("You Cannot Access This File Directly. Please Make Sure IN_MYBB Is Defined.");}
 $GLOBALS['home_codename'] = basename(__FILE__, '.php');
 $calling_hook = pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_FILENAME)."_end";
-$plugins->add_hook("admin_config_settings_change_commit", "home_reload");
+if(defined("IN_ADMINCP")){
+	$plugins->add_hook("admin_config_settings_change_commit", "home_reload");
+	$plugins->add_hook("admin_config_plugins_plugin_list","home_update_check");
+	$plugins->add_hook("admin_config_plugins_begin", "home_update");
+}
 $plugins->add_hook("build_friendly_wol_location_end", "home_online_activity");
 $plugins->add_hook($calling_hook, 'home_mangle_nav');
 /*
@@ -343,7 +347,7 @@ function home_install() {
 
 function home_activate() {
 	global $db;
-
+	
 	try {
 		$data = home_load_resources();
 
@@ -671,11 +675,7 @@ function home_load_resources() {
 		if ($record) {
 			// Verify the stored data.
 			$checksum = hash('sha256', $record['data']);
-			if(home_update_check() !== $checksum){
-				// new resource
-				flash_message("updated resources detected<br>deactivate then activate again to load the new resource","error"); 
-				admin_redirect('index.php?module=config-plugins');
-			}
+			
 
 			if (!hash_equals($record['checksum'], $checksum)) {
 				throw new RuntimeException(
@@ -859,22 +859,38 @@ function home_mangle_nav() {
 }
 
 function home_update_check(){
-	// has install.dta changed ?
-	$path = __DIR__ . '/home/install.dta';
-	if (!is_file($path) || !is_readable($path)) {
-		throw new RuntimeException(
-			"Site Pages: Data file missing or unreadable: {$path}"
-		);
+	// Check whether the installed plugin version differs.
+	global $db;
+
+	$current_info = home_info();
+	$current_version = $current_info['version'];
+
+	$query = $db->simple_select(
+		'pages_resources',
+		'version',
+		"active='1'"
+	);
+
+	if ($db->num_rows($query) == 0) {
+		return;
 	}
 
-	$data = include $path;
+	$record = $db->fetch_array($query);
+	$working_version = $record['version'];
 
-	if (!is_array($data) || empty($data)) {
-		throw new RuntimeException(
-			'Site Pages: Resource data is invalid or empty.fallback'
+	if ($working_version !== $current_version) {
+		flash_message(
+			"Site Pages Plugin version differs from the installed resources. <a href='index.php?module=config-plugins&action=update_home'>Click here to update</a>",
+			'error'
 		);
 	}
-	return hash('sha256', $data);
+}
+function home_update() {
+	 global $db, $mybb;
+    if ($mybb->input['action'] != "update_home"){
+        return;
+    }
+    die("in update");
 }
 function home_is_navman_active() {
 	global $cache;
