@@ -67,8 +67,9 @@ function home_info() {
  * @return none
  * 
  */
-function home_install($data = array()) {
+function home_install($data = array(),$current_data = array()) {
 	global $db, $mybb;
+	$install = false;
 	try {
 		$db_type = $mybb->config['database']['type'];
 		switch ($db_type) {
@@ -90,11 +91,21 @@ function home_install($data = array()) {
 					"Site Pages: Unsupported database driver: {$db_type}"
 				);
 		}
-		if (count($data) == 0){
-			// do this for a new install else use the update
-			$data = home_load_resources();
-		}
+		$install = false;
 
+		if (count($data) == 0 && count($current_data) == 0) {
+			// Fresh installation
+			$data = home_load_resources();
+			$install = true;
+		}
+		elseif (count($data) == 0 || count($current_data) == 0) {
+			throw new RuntimeException('Site Pages: Invalid resource data for installation or update.');
+		}
+		if (!$install) {
+			// Update: compare current_data against new_data
+			// Identify changes to tables, templates, CSS, etc.
+			// return out of the function  or manipulate the data before continuing
+		}
 		home_validate_resources($data, array(
 			'tables' => array('name', 'mysql', 'pgsql', 'sqlite'),
 			'templates' => array('name', 'content'),
@@ -331,16 +342,18 @@ function home_install($data = array()) {
 			array(	'active' => 0),
 			"active='1'"
 		);
+		$plugin_info = home_info();
 		$checksum = hash('sha256', $json);
 		$insert_data = array(
 			'data'     => $db->escape_string($json),
 			'checksum' => $db->escape_string($checksum),
-			'version'  => '',
+			'version'  => $db->escape_string($plugin_info['version']),
 			'dateline' => TIME_NOW,
 			'active'   => 1
 		);
 		$db->insert_query('pages_resources', $insert_data);
-	} catch (Throwable $e) {
+	} 
+	catch (Throwable $e) {
 		flash_message($e->getMessage(), 'error');
 		admin_redirect('index.php?module=config-plugins');
 		return;
@@ -889,7 +902,7 @@ function home_update_check(){
 	}
 }
 
-function home_load_current_resources() {
+function home_load_file_resources() {
 	$path = __DIR__ . '/home/install.dta';
 
 	if (!is_file($path) || !is_readable($path)) {
@@ -908,25 +921,27 @@ function home_load_current_resources() {
 
 	return $data;
 }
-
 function home_update() {
-	 global $db, $mybb;
-    if ($mybb->input['action'] != "update_home"){
-        return;
-    }
-    try {
-		
-		$new_data =  home_load_current_resources();
-		home_install($new_data);
+	global $db, $mybb;
+	if ($mybb->get_input('action') != 'update_home') {
+		return;
 	}
-    catch (Throwable $e) {
+	try {
+		$current_data = home_load_resources();
+		$new_data = home_load_file_resources();
+
+		home_install($new_data, $current_data);
+	}
+	catch (Throwable $e) {
 		flash_message($e->getMessage(), 'error');
 		admin_redirect('index.php?module=config-plugins');
 		return;
-	} 
-	flash_message("Site Pages successfully Updated" ,"success");
-    admin_redirect('index.php?module=config-plugins');
+	}
+
+	flash_message('Site Pages successfully Updated', 'success');
+	admin_redirect('index.php?module=config-plugins');
 }
+
 function home_is_navman_active() {
 	global $cache;
 	$plugins = $cache->read('plugins');
