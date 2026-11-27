@@ -46,12 +46,12 @@ function home_info() {
 	global $lang, $home_codename;
 	//$codename = str_replace('.php', '', basename(__FILE__));
 	return array(
-		"name"			=> "{$lang->pages_plugin} ($home_codename)",
+		"name"			=> "{$lang->pages_plugin}",
 		"description"	=> "Build pages around a mybb forum",
 		"website"		=> "https://phporyx.co.uk",
 		"author"			=> 'JimR',
 		"authorsite"	=> "https://community.mybb.com/user-37677.html",
-		"version"		=> '1.00c',
+		"version"		=> '1.03',
 		"guid" 			=> '',
 		"codename"	=> $home_codename,
 		"compatibility" => '18*'
@@ -858,7 +858,11 @@ function home_mangle_nav() {
 	) {
 		return;
 	}
-
+	if ($is_home) {
+	$navbits[0]['name'] = $home_title;
+	$navbits[0]['url'] = $home_url;
+	return;
+}
 	if (in_array(THIS_SCRIPT, $home_scripts, true)) {
 		unset($tmp_navbits[0]);
 	}
@@ -874,12 +878,15 @@ function home_mangle_nav() {
 	}
 }
 
-function home_update_check(){
-	// Check whether the installed plugin version differs.
-	global $db;
+function home_update_check() {
+	global $db, $page;
 
 	$current_info = home_info();
 	$current_version = $current_info['version'];
+
+	if (!$db->table_exists('pages_resources')) {
+		return;
+	}
 
 	$query = $db->simple_select(
 		'pages_resources',
@@ -895,9 +902,8 @@ function home_update_check(){
 	$working_version = $record['version'];
 
 	if ($working_version !== $current_version) {
-		flash_message(
-			"Site Pages Plugin version differs from the installed resources. <a href='index.php?module=config-plugins&action=update_home'>Click here to update</a>",
-			'error'
+		$page->output_alert(
+			"Site Pages Plugin version differs from the installed resources. <a href='index.php?module=config-plugins&action=update_home'>Click here to update</a>"
 		);
 	}
 }
