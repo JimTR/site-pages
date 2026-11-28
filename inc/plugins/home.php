@@ -539,17 +539,7 @@ function home_uninstall() {
 	update_theme_stylesheet_list(1);
 
 	// Remove plugin-owned database tables.
-	if ($db instanceof DB_SQLite) {
-		foreach ($db->query_objects as $query) {
-			if ($query instanceof PDOStatement) {  
-				if (strpos($query->queryString, 'mybb_settings') !== false ||
-					strpos($query->queryString, 'mybb_settinggroups') !== false) {
-					error_log('Site Pages: Closing ' . $query->queryString);
-					$query->closeCursor();
-				}
-			}
-		}
-	} 
+	home_close_cursors();
 	foreach ($data['tables'] as $table) {
 		if (!empty($table['name']) && $db->table_exists($table['name'])) {
 			$db->drop_table($table['name']);
@@ -961,4 +951,13 @@ function home_is_navman_active() {
 		return true;
 	}
 	return false;
+}
+function home_close_cursors (){
+	if ($db instanceof DB_SQLite) {
+		foreach ($db->query_objects as $query) {
+			if ($query instanceof PDOStatement) {
+				$query->closeCursor();
+			}
+		}
+	}
 }
