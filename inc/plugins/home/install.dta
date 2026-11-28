@@ -120,9 +120,7 @@ $data['tables']['resources']['sqlite'] = "CREATE TABLE ".TABLE_PREFIX."pages_res
     dateline INTEGER NOT NULL,
     active INTEGER NOT NULL DEFAULT 0
 );
-
-CREATE INDEX ".TABLE_PREFIX."pages_resources_active_idx
-ON ".TABLE_PREFIX."pages_resources (active);";
+";
 
 $data['tables']['layout']['name'] = "pages_layout";
 
@@ -151,6 +149,7 @@ $data['tables']['layout']['pgsql'] = "CREATE TABLE ".TABLE_PREFIX."pages_layout 
 );";
 
 $data['tables']['layout']['indexes']['pgsql'] = array(
+	"CREATE INDEX ".TABLE_PREFIX."pages_resources_active_idx ON ".TABLE_PREFIX."pages_resources (active);",
     "CREATE INDEX ".TABLE_PREFIX."pages_layout_page_id_idx ON ".TABLE_PREFIX."pages_layout (page_id)",
     "CREATE INDEX ".TABLE_PREFIX."pages_layout_block_id_idx ON ".TABLE_PREFIX."pages_layout (block_id)",
     "CREATE INDEX ".TABLE_PREFIX."pages_layout_page_zone_order_idx ON ".TABLE_PREFIX."pages_layout (page_id, zone, display_order)"
