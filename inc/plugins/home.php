@@ -503,13 +503,7 @@ function home_uninstall() {
 		return;
 	}
 	require_once MYBB_ROOT . $mybb->config['admin_dir'] . '/inc/functions_themes.php';
-	// Remove database tables.
-	foreach ($data['tables'] as $table) {
-		if (!empty($table['name']) && $db->table_exists($table['name'])) {
-			$db->drop_table($table['name']);
-		}
-	}
-	
+		
 	// Remove CSS stylesheets.
 	foreach ($data['css'] as $css) {
 
@@ -545,6 +539,17 @@ function home_uninstall() {
 	update_theme_stylesheet_list(1);
 
 	// Remove plugin-owned database tables.
+	if ($db instanceof DB_SQLite) {
+		foreach ($db->query_objects as $query) {
+			if ($query instanceof PDOStatement) {  
+				if (strpos($query->queryString, 'mybb_settings') !== false ||
+					strpos($query->queryString, 'mybb_settinggroups') !== false) {
+					error_log('Site Pages: Closing ' . $query->queryString);
+					$query->closeCursor();
+				}
+			}
+		}
+	} 
 	foreach ($data['tables'] as $table) {
 		if (!empty($table['name']) && $db->table_exists($table['name'])) {
 			$db->drop_table($table['name']);
@@ -687,7 +692,7 @@ function home_load_resources() {
 		);
 
 		$record = $db->fetch_array($query);
-
+		$db->free_result($query);
 		if ($record) {
 			// Verify the stored data.
 			$checksum = hash('sha256', $record['data']);
