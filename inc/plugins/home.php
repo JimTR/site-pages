@@ -902,6 +902,7 @@ function home_update_check() {
 	$working_version = $record['version'];
 
 	if ($working_version !== $current_version) {
+		error_log('Site Pages: version mismatch detected');
 		$page->output_alert(
 			"Site Pages Plugin version differs from the installed resources. <a href='index.php?module=config-plugins&action=update_home'>Click here to update</a>"
 		);
